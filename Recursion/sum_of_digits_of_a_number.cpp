@@ -3,21 +3,19 @@
 #include <iostream>
 using namespace std;
 
-void printN(int n)
+int sum(int n)
 {
-    // base case
-    if (n == 0)
+    if (n < 10)
     {
-        return;
+        return n;
     }
-    printN(n - 1);
-    cout << n << "  ";
+    return (n % 10) + sum(n / 10);
 }
 
 int main()
 {
     int n;
     cin >> n;
-    printN(n);
+    cout << sum(n) << endl;
     return 0;
 }

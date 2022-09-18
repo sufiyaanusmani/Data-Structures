@@ -3,21 +3,20 @@
 #include <iostream>
 using namespace std;
 
-void printN(int n)
+int count(int n)
 {
     // base case
-    if (n == 0)
+    if (n < 10)
     {
-        return;
+        return 1;
     }
-    printN(n - 1);
-    cout << n << "  ";
+    return 1 + count(n / 10);
 }
 
 int main()
 {
     int n;
     cin >> n;
-    printN(n);
+    cout << count(n) << endl;
     return 0;
 }
