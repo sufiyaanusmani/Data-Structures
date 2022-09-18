@@ -1,3 +1,6 @@
+//Qasim Hasan
+//21k3210
+
 #include<iostream>
 using namespace std;
 
