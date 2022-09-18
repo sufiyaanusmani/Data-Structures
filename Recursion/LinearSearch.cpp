@@ -1,28 +1,35 @@
-//Qasim Hasan
-#include<iostream>
+// Sufiyaan Usmani
+
+#include <iostream>
 using namespace std;
-bool LinearSearch(int arr[],int size,int data){
-    if(size==0){
+
+bool search(int arr[], int size, int data)
+{
+    if (size == 0)
+    {
         return false;
     }
-    if(arr[0]==data){
+    if (arr[0] == data)
+    {
         return true;
-    }else{
-        bool ans=LinearSearch(arr+1,size-1,data);
-        return ans;
     }
+    return search(arr + 1, size - 1, data);
 }
-int main(){
-    int arr[5]={3,5,1,2,6};
-    int size=5;
+
+int main()
+{
+    int arr[] = {4, 3, 2, 5, 33, 5};
+    int size = sizeof(arr) / sizeof(arr[0]);
     int data;
-    cout << "Enter the data to check if it exist in the Array:";
+    cout << "Enter data to search: ";
     cin >> data;
-    bool ans=LinearSearch(arr,size,data);
-    if(ans){
-        cout << "Data exist in Array";
-    }else{
-        cout << "Data Do not exist in Array";
+    if (search(arr, size, data))
+    {
+        cout << "Data found" << endl;
+    }
+    else
+    {
+        cout << "Data not found" << endl;
     }
     return 0;
 }
