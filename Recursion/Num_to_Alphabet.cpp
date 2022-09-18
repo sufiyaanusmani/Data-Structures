@@ -1,3 +1,5 @@
+//Qasim Hasan 
+//21K3210
 #include<iostream>
 using namespace std;
 int sayname(int choice){
