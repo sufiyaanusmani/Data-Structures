@@ -24,13 +24,13 @@ public:
     }
 };
 
-class DoublyLinkedList
+class Node
 {
 private:
     Node *head, *tail;
 
 public:
-    DoublyLinkedList()
+    Node()
     {
         head = tail = NULL;
     }
@@ -194,7 +194,7 @@ public:
         return false;
     }
 
-    ~DoublyLinkedList()
+    ~Node()
     {
         if (!isEmpty())
         {
@@ -212,7 +212,7 @@ public:
 
 int main()
 {
-    DoublyLinkedList dll;
+    Node dll;
     dll.addToHead(10);
     dll.addToHead(20);
     dll.addToTail(30);
