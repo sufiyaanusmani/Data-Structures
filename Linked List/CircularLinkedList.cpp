@@ -1,15 +1,17 @@
-// Sufiyaan Usmani
-
 #include <iostream>
 using namespace std;
 
-class Node
+class node
 {
 public:
     int data;
-    Node *next;
+    node *next;
 
-    Node(int data)
+    node()
+    {
+        next = NULL;
+    }
+    node(int data)
     {
         this->data = data;
         next = NULL;
@@ -18,36 +20,34 @@ public:
 
 class CircularLinkedList
 {
-private:
-    Node *tail;
-
 public:
+    node *tail;
+
     CircularLinkedList()
     {
         tail = NULL;
     }
-
-    void printList()
+    void print()
     {
         if (tail == NULL)
         {
-            cout << "List is empty" << endl;
+            cout << "   Link List Is Empty ";
         }
         else
         {
-            Node *temp = tail->next;
+            node *temp = tail->next; // here tail->next === head
+            cout << "(<->";
             do
             {
-                cout << temp->data << "   ";
+                cout << temp->data << "<->";
                 temp = temp->next;
             } while (temp != tail->next);
-            cout << endl;
+            cout << ")";
         }
     }
-
-    void addToHead(int data)
+    void prependatstart(int data)
     {
-        Node *n = new Node(data);
+        node *n = new node(data);
         if (tail == NULL)
         {
             tail = n;
@@ -59,10 +59,9 @@ public:
             tail->next = n;
         }
     }
-
-    void addToTail(int data)
+    void appendatEnd(int data)
     {
-        Node *n = new Node(data);
+        node *n = new node(data);
         if (tail == NULL)
         {
             tail = n;
@@ -75,168 +74,140 @@ public:
             tail = n;
         }
     }
-
-    void deleteFromHead()
+    void insert(int index, int data)
     {
-        if (tail == NULL)
+        node *n = new node(data);
+        if (index == 0)
         {
-            cout << "List is already empty" << endl;
+            prependatstart(data);
         }
         else
         {
-            if (tail->next == tail)
-            {
-                // if only one node
-                delete tail;
-                tail = NULL;
-            }
-            else
-            {
-                Node *toDelete = tail->next;
-                tail->next = toDelete->next;
-                delete toDelete;
-            }
-        }
-    }
-
-    void deleteFromTail()
-    {
-        if (tail == NULL)
-        {
-            cout << "List is already empty" << endl;
-        }
-        else
-        {
-            if (tail->next == tail)
-            {
-                // if only one node
-                delete tail;
-                tail = NULL;
-            }
-            else
-            {
-                Node *temp = tail->next;
-                while (temp->next != tail)
-                {
-                    temp = temp->next;
-                }
-                temp->next = tail->next;
-                delete tail;
-                tail = temp;
-            }
-        }
-    }
-
-    void deleteNode(int data)
-    {
-        if (tail == NULL)
-        {
-            cout << "List is already empty" << endl;
-        }
-        else
-        {
-            if (tail->data == data && tail->next == tail)
-            {
-                delete tail;
-                tail = NULL;
-            }
-            else
-            {
-                Node *temp = tail->next;
-                Node *prev = tail;
-                do
-                {
-                    if (temp->data == data)
-                    {
-                        break;
-                    }
-                    prev = temp;
-                    temp = temp->next;
-                } while (temp != tail->next);
-                if (temp->data == data)
-                {
-                    prev->next = temp->next;
-                    if (tail == temp)
-                    {
-                        tail = prev;
-                    }
-                    delete temp;
-                }
-                else
-                {
-                    cout << "Data not found" << endl;
-                }
-            }
-        }
-    }
-
-    bool isInList(int data)
-    {
-        if (tail == NULL)
-        {
-            return false;
-        }
-        else
-        {
-            Node *temp = tail->next;
+            node *temp = tail->next;
+            node *prev = NULL;
+            int count = 0;
             do
-            {
-                if (temp->data == data)
-                {
-                    return true;
-                }
-                temp = temp->next;
-            } while (temp != tail->next);
-        }
-        return false;
-    }
-
-    ~CircularLinkedList()
-    {
-        if (tail != NULL)
-        {
-            Node *temp = tail;
-            Node *prev = NULL;
-            while (temp != tail)
             {
                 prev = temp;
                 temp = temp->next;
-                delete prev;
+                count++;
+            } while (temp != tail->next && count < index);
+
+            if (count == index)
+            {
+                if (temp == tail && count == index)
+                {
+                    appendatEnd(data);
+                }
+                else
+                {
+                    n->next = temp;
+                    prev->next = n;
+                }
+            }
+            else
+            {
+                cout << "Invalid Index";
             }
         }
-        delete tail;
-        tail = NULL;
+    }
+    void deleteFirstNode()
+    {
+        if (tail == NULL)
+        {
+            cout << " list is empty ";
+        }
+        else
+        {
+            if (tail->next == tail)
+            {
+                delete tail;
+                tail = NULL;
+            }
+            else
+            {
+                node *temp = tail->next;
+                tail->next = temp->next;
+                delete temp;
+            }
+        }
+    }
+
+    void deletelastnode()
+    {
+        if (tail == NULL)
+        {
+            cout << "List does not exist";
+        }
+        else
+        {
+            if (tail->next == tail)
+            {
+                delete tail;
+                tail = NULL;
+            }
+            else
+            {
+                node *temp = tail->next;
+                node *prev = NULL;
+                do
+                {
+                    prev = temp;
+                    temp = temp->next;
+                } while (temp != tail);
+                prev->next = tail->next;
+                tail = prev;
+                delete temp;
+            }
+        }
+    }
+
+    void deletenode(int index)
+    {
+        if (tail == NULL)
+        {
+        }
+        else
+        {
+            if (index == 0)
+            {
+                deleteFirstNode();
+            }
+            else
+            {
+                node *temp = tail->next;
+                node *prev = NULL;
+                int count = 0;
+                do
+                {
+                    prev = temp;
+                    temp = temp->next;
+                    count++;
+                } while (temp != tail->next && count < index);
+                if (index == count && temp == tail)
+                {
+                    deletelastnode();
+                }
+                else
+                {
+                    prev->next = temp->next;
+                    delete temp;
+                }
+            }
+        }
     }
 };
-
 int main()
 {
-    CircularLinkedList cll;
-    cll.addToTail(30);
-    cll.addToHead(5);
-    cll.addToHead(10);
-    cll.addToTail(20);
-    cll.addToHead(15);
-    cll.printList();
-    cll.deleteFromHead();
-    cll.printList();
-    cll.addToHead(70);
-    cll.addToTail(25);
-    cll.addToHead(11);
-    cll.printList();
-    cll.deleteFromTail();
-    cll.printList();
-    cll.deleteNode(10);
-    cll.printList();
-    cll.deleteNode(1990);
-    cll.printList();
-    cll.deleteNode(70);
-    cll.printList();
-    cll.deleteNode(11);
-    cll.printList();
-    cll.deleteNode(5);
-    cll.printList();
-    cout << cll.isInList(90) << endl;
-    cout << cll.isInList(20) << endl;
-    return 0;
+    CircularLinkedList c;
+    c.prependatstart(8);
+    c.appendatEnd(76);
+    c.prependatstart(65);
+    c.insert(2, 735);
+    // c.deleteFirstNode();
+    // c.deletelastnode();
+    // c.deletenode(1);
+    c.print();
+    c.deletenode(4);
+    c.print();
 }
