@@ -7,146 +7,121 @@ class Node
 {
 public:
     int data;
-    Node *previous;
+    Node *prev;
     Node *next;
 
-public:
     Node()
     {
-        previous = next = NULL;
+        prev = next = NULL;
     }
 
-    Node(int data, Node *n = NULL, Node *p = NULL)
+    Node(int data)
     {
         this->data = data;
-        next = n;
-        previous = p;
+        prev = next = NULL;
     }
 };
 
-class Node
+class DoublyLinkedList
 {
-private:
-    Node *head, *tail;
-
 public:
-    Node()
+    Node *head;
+    Node *tail;
+
+    DoublyLinkedList()
     {
         head = tail = NULL;
     }
 
-    bool isEmpty()
+    void printList()
     {
         if (head == NULL)
         {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    void printList()
-    {
-        if (isEmpty())
-        {
-            cout << "List is empty" << endl;
+            cout << "empty" << endl;
         }
         else
         {
             Node *temp = head;
             while (temp != NULL)
             {
-                cout << temp->data << "   ";
+                cout << temp->data << "  ";
                 temp = temp->next;
             }
             cout << endl;
         }
     }
 
-    void addToHead(int data)
+    void prepend(int data)
     {
-        Node *n = new Node(data, head);
-        if (isEmpty())
+        Node *n = new Node(data);
+        if (head == NULL)
         {
             head = tail = n;
         }
         else
         {
+            n->next = head;
+            head->prev = n;
             head = n;
-            head->next->previous = head;
         }
     }
 
-    void addToTail(int data)
+    void append(int data)
     {
-        if (isEmpty())
+        Node *n = new Node(data);
+        if (head == NULL)
         {
-            Node *n = new Node(data);
             head = tail = n;
         }
         else
         {
-            Node *n = new Node(data, NULL, tail);
+            tail->next = n;
+            n->prev = tail;
             tail = n;
-            tail->previous->next = tail;
         }
     }
 
-    void deleteFromHead()
+    void insert(int index, int data)
     {
-        if (isEmpty())
+        Node *n = new Node(data);
+        if (index == 0)
         {
-            cout << "List is already empty" << endl;
+            prepend(data);
+        }
+        else
+        {
+            Node *temp = head;
+            Node *prev = NULL;
+            int count = 0;
+            while (temp != NULL && count != index)
+            {
+                prev = temp;
+                temp = temp->next;
+                count++;
+            }
+            if (temp != NULL)
+            {
+                n->next = temp;
+                n->prev = prev;
+                temp->prev = n;
+                prev->next = n;
+            }
+            else
+            {
+                cout << "Invalid index" << endl;
+            }
+        }
+    }
+
+    void deleteFirstNode()
+    {
+        if (head == NULL)
+        {
+            cout << "empty" << endl;
         }
         else
         {
             if (head == tail)
-            {
-                delete head;
-                head = tail = NULL;
-            }
-            else
-            {
-                head = head->next;
-                delete head->previous;
-                head->previous = NULL;
-            }
-        }
-    }
-
-    void deleteFromTail()
-    {
-        if (isEmpty())
-        {
-            cout << "List is already empty" << endl;
-        }
-        else
-        {
-            if (head == tail)
-            {
-                delete head;
-                head = tail = NULL;
-            }
-            else
-            {
-                tail = tail->previous;
-                delete tail->next;
-                tail->next = NULL;
-            }
-        }
-    }
-
-    void deleteNode(int data)
-    {
-        if (isEmpty())
-        {
-            cout << "List is already empty" << endl;
-        }
-        else
-        {
-            if (head == tail && head->data == data)
             {
                 delete head;
                 head = tail = NULL;
@@ -154,83 +129,141 @@ public:
             else
             {
                 Node *temp = head;
-                while (temp != NULL && temp->data != data)
-                {
-                    temp = temp->next;
-                }
-                if (temp != NULL)
-                {
-                    temp->previous->next = temp->next;
-                    temp->next->previous = temp->previous;
-                    delete temp;
-                }
-                else
-                {
-                    cout << "Data not found" << endl;
-                }
+                head = head->next;
+                head->prev = NULL;
+                delete temp;
             }
         }
     }
 
-    bool isInList(int data)
+    void deleteLastNode()
     {
-        if (isEmpty())
+        if (head == NULL)
         {
             cout << "List is empty" << endl;
-            return false;
         }
         else
         {
-            Node *temp = head;
-            while (temp != NULL)
+            if (head == tail)
             {
-                if (temp->data == data)
-                {
-                    return true;
-                }
-                temp = temp->next;
+                delete head;
+                head = tail = NULL;
+            }
+            else
+            {
+                Node *temp = tail;
+                tail = tail->prev;
+                tail->next = NULL;
+                delete temp;
             }
         }
-        return false;
     }
 
-    ~Node()
+    void deleteNode(int index)
     {
-        if (!isEmpty())
+        if (head != NULL)
         {
-            Node *temp = head;
-            while (temp != NULL)
+            if (index == 0)
             {
-                head = temp;
-                temp = temp->next;
-                delete head;
+                cout << "index 0" << endl;
+                deleteFirstNode();
+            }
+            else
+            {
+                Node *temp = head;
+                Node *prev = NULL;
+                int count = 0;
+                while (temp != NULL && count != index)
+                {
+                    prev = temp;
+                    temp = temp->next;
+                    count++;
+                }
+                if (temp != NULL)
+                {
+                    if (temp->next == NULL)
+                    {
+                        cout << "last node" << endl;
+                        deleteLastNode();
+                    }
+                    else
+                    {
+                        cout << "between" << endl;
+                        prev->next = temp->next;
+                        temp->next->prev = prev;
+                        delete temp;
+                    }
+                }
+                else
+                {
+                    cout << "Invalid index" << endl;
+                }
             }
         }
-        head = tail = NULL;
+    }
+
+    void reverse()
+    {
+        if (head != NULL)
+        {
+            Node *p = head;
+            Node *q = NULL;
+            Node *r = NULL;
+            tail = head;
+            while (p != NULL)
+            {
+                r = q;
+                q = p;
+                p = p->next;
+                q->next = r;
+                q->prev = p;
+            }
+            head = q;
+        }
+    }
+
+    void update(int index, int data)
+    {
+        if (head != NULL)
+        {
+            Node *temp = head;
+            int count = 0;
+            while (temp != NULL && count < index)
+            {
+                temp = temp->next;
+                count++;
+            }
+            temp->data = data;
+        }
     }
 };
 
 int main()
 {
-    Node dll;
-    dll.addToHead(10);
-    dll.addToHead(20);
-    dll.addToTail(30);
-    dll.addToTail(40);
-    dll.addToHead(70);
-    dll.addToHead(90);
-    dll.addToTail(80);
-    dll.addToTail(66);
+    DoublyLinkedList dll;
+    dll.prepend(10);
+    dll.append(20);
+    dll.append(30);
+    dll.prepend(15);
     dll.printList();
-    dll.deleteFromHead();
+    dll.insert(2, 40);
     dll.printList();
-    dll.deleteFromTail();
+    dll.deleteFirstNode();
+    dll.deleteLastNode();
     dll.printList();
-    dll.deleteNode(40);
+    dll.append(90);
+    dll.append(78);
+    dll.append(40);
+    dll.append(110);
     dll.printList();
-    dll.deleteNode(35);
     dll.printList();
-    cout << (dll.isInList(19) == true ? "True" : "False") << endl;
-    cout << (dll.isInList(70) == true ? "True" : "False") << endl;
+    dll.reverse();
+    dll.printList();
+    dll.update(2, 30);
+    dll.printList();
+    dll.insert(6, 25);
+    dll.printList();
+    dll.deleteNode(7);
+    dll.printList();
     return 0;
 }
