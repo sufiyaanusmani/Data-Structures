@@ -40,6 +40,10 @@ public:
         for (int i = 0; i < row; i++)
         {
             arr[i] = new int[col];
+            for (int j = 0; j < col; j++)
+            {
+                arr[i][j] = obj.arr[i][j];
+            }
         }
     }
 
@@ -118,7 +122,7 @@ public:
     {
         if (arr != NULL)
         {
-            for (int i = 0; i < row; i++)
+            for (int i = row - 1; i >= 0; i--)
             {
                 delete[] arr[i];
             }
