@@ -21,7 +21,7 @@ public:
 
     bool isEmpty()
     {
-        if (front == rear)
+        if (front == -1 && rear == -1)
         {
             return true;
         }
@@ -49,6 +49,11 @@ public:
         {
             cout << "Queue is full" << endl;
         }
+        else if (isEmpty())
+        {
+            rear = front = 0;
+            arr[rear] = data;
+        }
         else
         {
             rear++;
@@ -63,12 +68,22 @@ public:
         {
             cout << "Queue is empty" << endl;
         }
+        else if (rear == front)
+        {
+            data = arr[front];
+            rear = front = -1;
+        }
         else
         {
-            front++;
             data = arr[front];
+            front++;
         }
         return data;
+    }
+
+    int count()
+    {
+        return (rear - front + 1);
     }
 
     void print()
@@ -79,7 +94,7 @@ public:
         }
         else
         {
-            for (int i = front + 1; i <= rear; i++)
+            for (int i = front; i <= rear; i++)
             {
                 cout << arr[i] << "  ";
             }
