@@ -34,3 +34,6 @@
 
 # Ignore code-workspaces
 *.code-workspace
+
+
+.tmp.driveupload/
