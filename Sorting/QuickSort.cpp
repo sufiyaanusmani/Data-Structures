@@ -8,12 +8,15 @@ int partition(int *arr, int l, int h)
     // two variables: i and j
     // i will look for greater elements
     // j will look for smaller elements
-    int pivot = arr[l];
+    int pIndex, pivot;
+    // int pivot = arr[l];
     int i = l;
     int j = h;
 
     while (i < j)
     {
+        pIndex = l;
+        pivot = arr[l];
         while (arr[i] <= pivot)
         {
             i++;
