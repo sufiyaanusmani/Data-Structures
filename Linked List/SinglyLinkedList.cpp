@@ -425,7 +425,7 @@ public:
                     extra++;
                 }
             }
-            if (extra > 0)
+            if (extra >= 0)
             {
                 total++;
             }
@@ -462,6 +462,86 @@ public:
         }
 
         swap(temp1->data, temp2->data);
+    }
+
+    void insertionSort()
+    {
+        sorted = NULL;
+        Node *next, *current;
+        current = head;
+        while (current != NULL)
+        {
+            next = current->next;
+            sortedInsert(current);
+            current = next;
+        }
+        head = sorted;
+    }
+
+    void sortedInsert(Node *n)
+    {
+        if (sorted == NULL || sorted->data >= n->data)
+        {
+            n->next = sorted;
+            sorted = n;
+        }
+        else
+        {
+            Node *temp = sorted;
+            while (temp->next != NULL && temp->next->data < n->data)
+            {
+                temp = temp->next;
+            }
+            n->next = temp->next;
+            temp->next = n;
+        }
+    }
+
+    void deleteAlternate()
+    {
+        Node *prev = head;
+        Node *node = head->next;
+        while (prev != NULL && node != NULL)
+        {
+            prev->next = node->next;
+            delete node;
+            prev = prev->next;
+            if (prev != NULL)
+            {
+                node = prev->next;
+            }
+        }
+    }
+
+    void rotateLeft(int k)
+    {
+        int data;
+        for (int i = 0; i < k; i++)
+        {
+            data = head->data;
+            deleteFirstNode();
+            append(data);
+        }
+    }
+
+    void bubbleSort()
+    {
+        Node *temp;
+        int n;
+        for (int i = 0; i < count() - 1; i++)
+        {
+            temp = head;
+            for (int j = 0; j < count() - 1 - i; j++)
+            {
+                if (temp->data > temp->next->data)
+                {
+                    n = temp->data;
+                    temp->data = temp->next->data;
+                    temp->next->data = n;
+                }
+                temp = temp->next;
+            }
+        }
     }
 };
 
@@ -507,7 +587,7 @@ int main()
     sll.printList();
     // sll.removeDuplicates();
     sll.printList();
-    cout << sll.countUnique() << endl;
+    cout << "Unique: " << sll.countUnique() << endl;
     SinglyLinkedList sll2;
     sll2.append(10);
     sll2.append(86);
