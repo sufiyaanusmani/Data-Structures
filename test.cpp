@@ -1,178 +1,174 @@
-// Sufiyaan Usmani
-
-#include <iostream>
+#include<iostream>
+#include<cstdlib>
+#include<string>
+#include<cstdio>
 using namespace std;
+const int TABLE_SIZE = 128;
+class HashNode
+{
+	public:
+	int key;
+	int value;
+		HashNode* next;
+			HashNode(int key, int value)
+			{
+			this->key = key;
+			this->value = value;
+			this->next = NULL;
+			}
 
-class Node{
-    public:
-        int data;
-        Node *left, *right;
-        Node(int data){
-            this->data = data;
-            left = right = NULL;
-        }
 };
-
-class AVL{
-    public:
-        Node *root;
-        AVL(){
-            root = NULL;
+    /* HashMap Class Declaration     */
+    class HashMap
+	{
+	private:
+		HashNode** htable;
+		public:
+		HashMap()
+		{
+			htable = new HashNode*[TABLE_SIZE];
+			for (int i = 0; i < TABLE_SIZE; i++)
+				htable[i] = NULL;
+        }
+		~HashMap()
+		{
+			for (int i = 0; i < TABLE_SIZE; ++i)
+			{
+			HashNode* entry = htable[i];
+			while (entry != NULL)
+			{
+				HashNode* prev = entry;
+				entry = entry->next;
+				delete prev;
+			}
+			}
+            delete[] htable;
         }
 
-        bool isEmpty(){
-            if(root == NULL){
-                return true;
-            }else{
-                return false;
-            }
+         /* Hash Function             */
+        int HashFunc(int key)
+		{
+			return key % TABLE_SIZE;
+		}
+		 /* Insert Element at a key             */
+		 void Insert(int key, int value)
+		{
+
+        int hash_val = HashFunc(key);
+        HashNode* prev = NULL;
+        HashNode* entry = htable[hash_val];
+        while (entry != NULL)
+        {
+            prev = entry;
+            entry = entry->next;
         }
-
-        int height(Node *r){
-            if(r == NULL){
-                return -1;
-            }else{
-                int left = height(r->left);
-                int right = height(r->right);
-                if(left > right){
-                    return(left + 1);
-                }else{
-                    return(right + 1);
-                }
-            }
+        if (entry == NULL)
+        {
+            entry = new HashNode(key, value);
+            if (prev == NULL)
+        {
+                htable[hash_val] = entry;
         }
-
-        int getBalanceFactor(Node *r){
-            if(r == NULL){
-                return -1;
-            }else{
-                return(height(r->left) - height(r->right));
-            }
+        else
+        {
+            prev->next = entry;
         }
-
-        Node *leftRotate(Node *r){
-            Node *x = r->right;
-            Node *temp = x->left;
-
-            x->left = r;
-            r->right = temp;
-
-            return x;
         }
-
-        Node *rightRotate(Node *r){
-            Node *x = r->left;
-            Node *temp = x->right;
-
-            x->right = r;
-            r->left = temp;
-
-            return x;
+        else
+        {
+            entry->value = value;
         }
-
-        Node *insert(Node *r, int data){
-            if(r == NULL){
-                r = new Node(data);
-                return r;
-            }
-
-            if(data < r->data){
-                r->left = insert(r->left, data);
-            }else if(data > r->data){
-                r->right = insert(r->right, data);
-            }else{
-                cout << "No duplicates allowed" << endl;
-                return r;
-            }
-
-            int bf = getBalanceFactor(r);
-
-            if(bf > 1 && data < r->left->data){
-                return rightRotate(r);
-            }
-            if(bf < -1 && data > r->right->data){
-                return leftRotate(r);
-            }
-            if(bf > 1 && data > r->left->data){
-                r->left = leftRotate(r->left);
-                return rightRotate(r);
-            }
-            if(bf < -1 && data < r->right->data){
-                r->right = rightRotate(r->right);
-                return leftRotate(r);
-            }
-
-            return r;
+    }
+    /* Remove Element at a key             */
+        void Remove(int key)
+        {
+        int hash_val = HashFunc(key);
+        HashNode* entry = htable[hash_val];
+        HashNode* prev = NULL;
+        if (entry == NULL || entry->key != key)
+        {
+      	cout<<"No Element found at key "<<key<<endl;
+        return;
         }
-
-        Node *deleteNode(Node *r, int data){
-            if(r == NULL){
-                return NULL;
-            }else if(data < r->data){
-                r->left = deleteNode(r->left, data);
-            }else if(data > r->data){
-                r->right = deleteNode(r->right, data);
-            }else{
-                if(r->left == NULL){
-                    Node *temp = r->right;
-                    delete r;
-                    return temp;
-                }else if(r->right == NULL){
-                    Node *temp = r->left;
-                    delete r;
-                    return temp;
-                }else{
-                    Node *temp = getMin(r->right);
-                    r->data = temp->data;
-                    r->right = deleteNode(r->right, temp->data);
-                }
-            }
-
-            int bf = getBalanceFactor(r);
-
-            if(bf == 2 && getBalanceFactor(r->left) >= 0){
-                return rightRotate(r);
-            }
-            if(bf == 2 && getBalanceFactor(r->left) == -1){
-                r->left = leftRotate(r->left);
-                return rightRotate(r);
-            }
-            if(bf == -2 && getBalanceFactor(r->right) <= 0){
-                return leftRotate(r);
-            }
-            if(bf == -2 && getBalanceFactor(r->right) == 1){
-                r->right = rightRotate(r->right);
-                return leftRotate(r);
-            }
+        while (entry->next != NULL)
+   	    {
+           prev = entry;
+           entry = entry->next;
         }
-
-        Node *getMin(Node *n){
-            Node *temp = n;
-            while(temp->left != NULL){
-                temp = temp->left;
-            }
-            return temp;
+        if (prev != NULL)
+        {
+         prev->next = entry->next;
         }
+        delete entry;
+        cout<<"Element Deleted"<<endl;
+    }
 
-        void printBalanceFactors(Node *r){
-            if(r == NULL){
-                return;
-            }
-            cout << getBalanceFactor(r) << endl;
-            printBalanceFactors(r->left);
-            printBalanceFactors(r->right);
+    /* Search Element at a key             */
+
+    int Search(int key)
+    {
+        bool flag = false;
+        int hash_val = HashFunc(key);
+        HashNode* entry = htable[hash_val];
+        while (entry != NULL)
+    {
+       if (entry->key == key)
+        {
+          cout<<entry->value<<" ";
+          flag = true;
         }
+        entry = entry->next;
+        }
+        if (!flag)
+        return -1;
+    }
 };
-
-int main(){
-    AVL tree;
-    tree.root = tree.insert(tree.root, 10);
-    tree.root = tree.insert(tree.root, 20);
-    tree.root = tree.insert(tree.root, 30);
-    tree.root = tree.insert(tree.root, 40);
-    tree.root = tree.insert(tree.root, 50);
-    tree.root = tree.insert(tree.root, 25);
-
-    tree.printBalanceFactors(tree.root);
-    return 0;
-}
+    /* Main Contains Menu     */
+    int main()
+    {
+        HashMap hash;
+        int key, value;
+        int choice;
+        while (1)
+        {
+            cout<<"\n----------------------"<<endl;
+            cout<<"Operations on Hash Table"<<endl;
+            cout<<"\n----------------------"<<endl;
+            cout<<"1.Insert element into the table"<<endl;
+            cout<<"2.Search element from the key"<<endl;
+            cout<<"3.Delete element at a key"<<endl;
+            cout<<"4.Exit"<<endl;
+            cout<<"Enter your choice: ";
+            cin>>choice;
+            switch(choice)
+            {
+            case 1:
+                cout<<"Enter element to be inserted: ";
+                cin>>value;
+                cout<<"Enter key at which element to be inserted: ";
+                cin>>key;
+                hash.Insert(key, value);
+                break;
+            case 2:
+                cout<<"Enter key of the element to be searched: ";
+                cin>>key;
+                cout<<"Element at key "<<key<<" : ";
+                if (hash.Search(key) == -1)
+                {
+    	        cout<<"No element found at key "<<key<<endl;
+    	        continue;
+    	    }
+                break;
+            case 3:
+                cout<<"Enter key of the element to be deleted: ";
+                cin>>key;
+                hash.Remove(key);
+                break;
+            case 4:
+                exit(1);
+            default:
+               cout<<"\nEnter correct option\n";
+           }
+        }
+        return 0;
+   }
