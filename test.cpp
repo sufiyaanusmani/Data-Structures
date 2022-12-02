@@ -1,174 +1,429 @@
 #include<iostream>
-#include<cstdlib>
-#include<string>
-#include<cstdio>
+#include <vector>
+#include <list>
+#include <iterator>
+
 using namespace std;
-const int TABLE_SIZE = 128;
-class HashNode
-{
-	public:
-	int key;
-	int value;
-		HashNode* next;
-			HashNode(int key, int value)
-			{
-			this->key = key;
-			this->value = value;
-			this->next = NULL;
-			}
+
+class Edge;
+class Vertex;
+
+class Edge {
+  public:
+    int DestinationVertexID;
+  int weight;
+
+  Edge() {}
+  Edge(int destVID, int w) {
+    DestinationVertexID = destVID;
+    weight = w;
+  }
+  void setEdgeValues(int destVID, int w) {
+    DestinationVertexID = destVID;
+    weight = w;
+  }
+  void setWeight(int w) {
+    weight = w;
+  }
+
+  int getDestinationVertexID() {
+    return DestinationVertexID;
+  }
+  int getWeight() {
+    return weight;
+  }
+};
+
+class Vertex {
+  public:
+    int state_id;
+  string state_name;
+
+  list < Edge > edgeList;
+
+  Vertex() {
+    state_id = 0;
+    state_name = "";
+  }
+
+  Vertex(int id, string sname) {
+    state_id = id;
+    state_name = sname;
+  }
+
+  int getStateID() {
+    return state_id;
+  }
+  string getStateName() {
+    return state_name;
+  }
+  void setID(int id) {
+    state_id = id;
+  }
+  void setStateName(string sname) {
+    state_name = sname;
+  }
+
+  list < Edge > getEdgeList() {
+    return edgeList;
+  }
+
+  //  void addEdgeToEdgelist(int toVertexID, int weight)
+  //  {
+  //	  	Edge e(toVertexID,weight);
+  //		edgeList.push_back(e); 
+  //		cout<<"Edge between "<<state_id<<" and "<<toVertexID<<" added Successfully"<<endl; 	
+  //  }
+
+  void printEdgeList() {
+    cout << "[";
+    for (auto it = edgeList.begin(); it != edgeList.end(); it++) {
+      cout << it -> getDestinationVertexID() << "(" << it -> getWeight() << ") --> ";
+    }
+    cout << "]";
+    cout << endl;
+  }
+
+  void updateVertexName(string sname) {
+    state_name = sname;
+    cout << "Vertex Name Updated Successfully";
+  }
 
 };
-    /* HashMap Class Declaration     */
-    class HashMap
-	{
-	private:
-		HashNode** htable;
-		public:
-		HashMap()
-		{
-			htable = new HashNode*[TABLE_SIZE];
-			for (int i = 0; i < TABLE_SIZE; i++)
-				htable[i] = NULL;
-        }
-		~HashMap()
-		{
-			for (int i = 0; i < TABLE_SIZE; ++i)
-			{
-			HashNode* entry = htable[i];
-			while (entry != NULL)
-			{
-				HashNode* prev = entry;
-				entry = entry->next;
-				delete prev;
-			}
-			}
-            delete[] htable;
-        }
 
-         /* Hash Function             */
-        int HashFunc(int key)
-		{
-			return key % TABLE_SIZE;
-		}
-		 /* Insert Element at a key             */
-		 void Insert(int key, int value)
-		{
+class Graph {
 
-        int hash_val = HashFunc(key);
-        HashNode* prev = NULL;
-        HashNode* entry = htable[hash_val];
-        while (entry != NULL)
-        {
-            prev = entry;
-            entry = entry->next;
+  vector < Vertex > vertices;
+
+  public:
+
+    bool checkIfVertexExistByID(int vid) {
+      bool flag = false;
+      for (int i = 0; i < vertices.size(); i++) {
+        if (vertices.at(i).getStateID() == vid) {
+          return true;
         }
-        if (entry == NULL)
-        {
-            entry = new HashNode(key, value);
-            if (prev == NULL)
-        {
-                htable[hash_val] = entry;
-        }
-        else
-        {
-            prev->next = entry;
-        }
-        }
-        else
-        {
-            entry->value = value;
-        }
-    }
-    /* Remove Element at a key             */
-        void Remove(int key)
-        {
-        int hash_val = HashFunc(key);
-        HashNode* entry = htable[hash_val];
-        HashNode* prev = NULL;
-        if (entry == NULL || entry->key != key)
-        {
-      	cout<<"No Element found at key "<<key<<endl;
-        return;
-        }
-        while (entry->next != NULL)
-   	    {
-           prev = entry;
-           entry = entry->next;
-        }
-        if (prev != NULL)
-        {
-         prev->next = entry->next;
-        }
-        delete entry;
-        cout<<"Element Deleted"<<endl;
+      }
+      return flag;
     }
 
-    /* Search Element at a key             */
-
-    int Search(int key)
-    {
-        bool flag = false;
-        int hash_val = HashFunc(key);
-        HashNode* entry = htable[hash_val];
-        while (entry != NULL)
-    {
-       if (entry->key == key)
-        {
-          cout<<entry->value<<" ";
-          flag = true;
-        }
-        entry = entry->next;
-        }
-        if (!flag)
-        return -1;
+  void addVertex(Vertex newVertex) {
+    bool check = checkIfVertexExistByID(newVertex.getStateID());
+    if (check == true) {
+      cout << "Vertex with this ID already exist" << endl;
+    } else {
+      vertices.push_back(newVertex);
+      cout << "New Vertex Added Successfully" << endl;
     }
+  }
+
+  Vertex getVertexByID(int vid) {
+    Vertex temp;
+    for (int i = 0; i < vertices.size(); i++) {
+      temp = vertices.at(i);
+      if (temp.getStateID() == vid) {
+        return temp;
+      }
+    }
+    return temp;
+  }
+
+  bool checkIfEdgeExistByID(int fromVertex, int toVertex) {
+    Vertex v = getVertexByID(fromVertex);
+    list < Edge > e;
+    e = v.getEdgeList();
+    bool flag = false;
+    for (auto it = e.begin(); it != e.end(); it++) {
+      if (it -> getDestinationVertexID() == toVertex) {
+        flag = true;
+        return flag;
+        break;
+      }
+
+    }
+    return flag;
+  }
+
+  void updateVertex(int oldVID, string vname) {
+    bool check = checkIfVertexExistByID(oldVID);
+    if (check == true) {
+      for (int i = 0; i < vertices.size(); i++) {
+        if (vertices.at(i).getStateID() == oldVID) {
+          vertices.at(i).setStateName(vname);
+          break;
+        }
+      }
+      cout << "Vertex(State) Updated Successfully " << endl;
+    }
+  }
+
+  void addEdgeByID(int fromVertex, int toVertex, int weight) {
+    bool check1 = checkIfVertexExistByID(fromVertex);
+    bool check2 = checkIfVertexExistByID(toVertex);
+
+    bool check3 = checkIfEdgeExistByID(fromVertex, toVertex);
+    if ((check1 && check2 == true)) {
+
+      if (check3 == true) {
+        cout << "Edge between " << getVertexByID(fromVertex).getStateName() << "(" << fromVertex << ") and " << getVertexByID(toVertex).getStateName() << "(" << toVertex << ") Already Exist" << endl;
+      } else {
+
+        for (int i = 0; i < vertices.size(); i++) {
+
+          if (vertices.at(i).getStateID() == fromVertex) {
+            Edge e(toVertex, weight);
+            //edgeList.push_back(e); 
+            //vertices.at(i).addEdgeToEdgelist(toVertex,weight);
+            vertices.at(i).edgeList.push_back(e);
+          } else if (vertices.at(i).getStateID() == toVertex) {
+            Edge e(toVertex, weight);
+            //edgeList.push_back(e); 
+            //vertices.at(i).addEdgeToEdgelist(fromVertex,weight);
+            vertices.at(i).edgeList.push_back(e);
+          }
+        }
+
+        cout << "Edge between " << fromVertex << " and " << toVertex << " added Successfully" << endl;
+      }
+    } else {
+      cout << "Invalid Vertex ID entered.";
+    }
+  }
+
+  void updateEdgeByID(int fromVertex, int toVertex, int newWeight) {
+    bool check = checkIfEdgeExistByID(fromVertex, toVertex);
+    if (check == true) {
+      for (int i = 0; i < vertices.size(); i++) {
+
+        if (vertices.at(i).getStateID() == fromVertex) {
+          for (auto it = vertices.at(i).edgeList.begin(); it != vertices.at(i).edgeList.end(); it++) {
+            if (it -> getDestinationVertexID() == toVertex) {
+              it -> setWeight(newWeight);
+              break;
+            }
+
+          }
+
+        } else if (vertices.at(i).getStateID() == toVertex) {
+          for (auto it = vertices.at(i).edgeList.begin(); it != vertices.at(i).edgeList.end(); it++) {
+            if (it -> getDestinationVertexID() == fromVertex) {
+              it -> setWeight(newWeight);
+              break;
+            }
+
+          }
+        }
+      }
+      cout << "Edge Weight Updated Successfully " << endl;
+    } else {
+      cout << "Edge between " << getVertexByID(fromVertex).getStateName() << "(" << fromVertex << ") and " << getVertexByID(toVertex).getStateName() << "(" << toVertex << ") DOES NOT Exist" << endl;
+    }
+  }
+
+  void deleteEdgeByID(int fromVertex, int toVertex) {
+    bool check = checkIfEdgeExistByID(fromVertex, toVertex);
+    if (check == true) {
+      for (int i = 0; i < vertices.size(); i++) {
+        if (vertices.at(i).getStateID() == fromVertex) {
+          for (auto it = vertices.at(i).edgeList.begin(); it != vertices.at(i).edgeList.end(); it++) {
+            if (it -> getDestinationVertexID() == toVertex) {
+              vertices.at(i).edgeList.erase(it);
+              //cout<<"First erase"<<endl;
+              break;
+            }
+          }
+        }
+
+        if (vertices.at(i).getStateID() == toVertex) {
+
+          for (auto it = vertices.at(i).edgeList.begin(); it != vertices.at(i).edgeList.end(); it++) {
+            if (it -> getDestinationVertexID() == fromVertex) {
+              vertices.at(i).edgeList.erase(it);
+              //cout<<"second erase"<<endl;
+              break;
+            }
+          }
+        }
+      }
+      cout << "Edge Between " << fromVertex << " and " << toVertex << " Deleted Successfully." << endl;
+    }
+  }
+
+  void deleteVertexByID(int vid) {
+    int vIndex = 0;
+    for (int i = 0; i < vertices.size(); i++) {
+      if (vertices.at(i).getStateID() == vid) {
+        vIndex = i;
+      }
+    }
+    for (int i = 0; i < vertices.size(); i++) {
+      for (auto it = vertices.at(i).edgeList.begin(); it != vertices.at(i).edgeList.end(); it++) {
+        if (it -> getDestinationVertexID() == vid) {
+          vertices.at(i).edgeList.erase(it);
+          break;
+        }
+      }
+
+    }
+    vertices.erase(vertices.begin() + vIndex);
+    cout << "Vertex Deleted Successfully" << endl;
+  }
+
+  void getAllNeigborsByID(int vid) {
+    cout << getVertexByID(vid).getStateName() << " (" << getVertexByID(vid).getStateID() << ") --> ";
+    for (int i = 0; i < vertices.size(); i++) {
+      if (vertices.at(i).getStateID() == vid) {
+        cout << "[";
+        for (auto it = vertices.at(i).edgeList.begin(); it != vertices.at(i).edgeList.end(); it++) {
+          cout << it -> getDestinationVertexID() << "(" << it -> getWeight() << ") --> ";
+        }
+        cout << "]";
+
+      }
+    }
+
+  }
+
+  void printGraph() {
+    for (int i = 0; i < vertices.size(); i++) {
+      Vertex temp;
+      temp = vertices.at(i);
+      cout << temp.getStateName() << " (" << temp.getStateID() << ") --> ";
+      temp.printEdgeList();
+    }
+  }
+
 };
-    /* Main Contains Menu     */
-    int main()
-    {
-        HashMap hash;
-        int key, value;
-        int choice;
-        while (1)
-        {
-            cout<<"\n----------------------"<<endl;
-            cout<<"Operations on Hash Table"<<endl;
-            cout<<"\n----------------------"<<endl;
-            cout<<"1.Insert element into the table"<<endl;
-            cout<<"2.Search element from the key"<<endl;
-            cout<<"3.Delete element at a key"<<endl;
-            cout<<"4.Exit"<<endl;
-            cout<<"Enter your choice: ";
-            cin>>choice;
-            switch(choice)
-            {
-            case 1:
-                cout<<"Enter element to be inserted: ";
-                cin>>value;
-                cout<<"Enter key at which element to be inserted: ";
-                cin>>key;
-                hash.Insert(key, value);
-                break;
-            case 2:
-                cout<<"Enter key of the element to be searched: ";
-                cin>>key;
-                cout<<"Element at key "<<key<<" : ";
-                if (hash.Search(key) == -1)
-                {
-    	        cout<<"No element found at key "<<key<<endl;
-    	        continue;
-    	    }
-                break;
-            case 3:
-                cout<<"Enter key of the element to be deleted: ";
-                cin>>key;
-                hash.Remove(key);
-                break;
-            case 4:
-                exit(1);
-            default:
-               cout<<"\nEnter correct option\n";
-           }
-        }
-        return 0;
-   }
+
+int main() {
+  Graph g;
+  string sname;
+  int id1, id2, w;
+  int option;
+  bool check;
+
+  do {
+    cout << "What operation do you want to perform? " <<
+      " Select Option number. Enter 0 to exit." << endl;
+    cout << "1. Add Vertex" << endl;
+    cout << "2. Update Vertex" << endl;
+    cout << "3. Delete Vertex" << endl;
+    cout << "4. Add Edge" << endl;
+    cout << "5. Update Edge" << endl;
+    cout << "6. Delete Edge" << endl;
+    cout << "7. Check if 2 Vertices are Neigbors" << endl;
+    cout << "8. Print All Neigbors of a Vertex" << endl;
+    cout << "9. Print Graph" << endl;
+    cout << "10. Clear Screen" << endl;
+    cout << "0. Exit Program" << endl;
+
+    cin >> option;
+    Vertex v1;
+
+    switch (option) {
+    case 0:
+
+      break;
+
+    case 1:
+      cout << "Add Vertex Operation -" << endl;
+      cout << "Enter State ID :";
+      cin >> id1;
+      cout << "Enter State Name :";
+      cin >> sname;
+      v1.setID(id1);
+      v1.setStateName(sname);
+      g.addVertex(v1);
+
+      break;
+
+    case 2:
+      cout << "Update Vertex Operation -" << endl;
+      cout << "Enter State ID of Vertex(State) to update :";
+      cin >> id1;
+      cout << "Enter State Name :";
+      cin >> sname;
+      g.updateVertex(id1, sname);
+
+      break;
+
+    case 3:
+      cout << "Delete Vertex Operation -" << endl;
+      cout << "Enter ID of Vertex(State) to Delete : ";
+      cin >> id1;
+      g.deleteVertexByID(id1);
+
+      break;
+
+    case 4:
+      cout << "Add Edge Operation -" << endl;
+      cout << "Enter ID of Source Vertex(State): ";
+      cin >> id1;
+      cout << "Enter ID of Destination Vertex(State): ";
+      cin >> id2;
+      cout << "Enter Weight of Edge: ";
+      cin >> w;
+      g.addEdgeByID(id1, id2, w);
+
+      break;
+
+    case 5:
+      cout << "Update Edge Operation -" << endl;
+      cout << "Enter ID of Source Vertex(State): ";
+      cin >> id1;
+      cout << "Enter ID of Destination Vertex(State): ";
+      cin >> id2;
+      cout << "Enter UPDATED Weight of Edge: ";
+      cin >> w;
+      g.updateEdgeByID(id1, id2, w);
+
+      break;
+
+    case 6:
+      cout << "Delete Edge Operation -" << endl;
+      cout << "Enter ID of Source Vertex(State): ";
+      cin >> id1;
+      cout << "Enter ID of Destination Vertex(State): ";
+      cin >> id2;
+      g.deleteEdgeByID(id1, id2);
+
+      break;
+
+    case 7:
+      cout << "Check if 2 Vertices are Neigbors -" << endl;
+      cout << "Enter ID of Source Vertex(State): ";
+      cin >> id1;
+      cout << "Enter ID of Destination Vertex(State): ";
+      cin >> id2;
+      check = g.checkIfEdgeExistByID(id1, id2);
+      if (check == true) {
+        cout << "Vertices are Neigbors (Edge exist)";
+      } else {
+        cout << "Vertices are NOT Neigbors (Edge does NOT exist)";
+      }
+
+      break;
+
+    case 8:
+      cout << "Print All Neigbors of a Vertex -" << endl;
+      cout << "Enter ID of Vertex(State) to fetch all Neigbors : ";
+      cin >> id1;
+      g.getAllNeigborsByID(id1);
+
+      break;
+
+    case 9:
+      cout << "Print Graph Operation -" << endl;
+      g.printGraph();
+
+      break;
+
+    default:
+      cout << "Enter Proper Option number " << endl;
+    }
+    cout << endl;
+
+  } while (option != 0);
+
+  return 0;
+}
