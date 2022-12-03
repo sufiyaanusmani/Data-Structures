@@ -71,5 +71,7 @@ int main(){
 
     // removes the first element
     v.erase(v.begin());
+
+    
     return 0;
 }

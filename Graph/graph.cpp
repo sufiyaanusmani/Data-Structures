@@ -167,6 +167,95 @@ class Graph{
                 cout << "One or both vertex does not exists" << endl;
             }
         }
+
+        void updateEdge(int fromVertex, int toVertex, int newWeight){
+            if(vertexExists(fromVertex) && vertexExists(toVertex)){
+                if(edgeExists(fromVertex, toVertex)){
+                    for(int i=0;i<vertices.size();i++){
+                        if(vertices.at(i).getVertexID() == fromVertex){
+                            for(auto it=vertices.at(i).edgeList.begin();it!=vertices.at(i).edgeList.end();it++){
+                                if(it->getDestinationVertexID() == toVertex){
+                                    it->setWeight(newWeight);
+                                    break;
+                                }                                
+                            }
+                        }else if(vertices.at(i).getVertexID() == toVertex){
+                            for(auto it=vertices.at(i).edgeList.begin();it!=vertices.at(i).edgeList.end();it++){
+                                if(it->getDestinationVertexID() == fromVertex){
+                                    it->setWeight(newWeight);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    cout << "Edge updated successfully" << endl;
+                }else{
+                    cout << "Edge does not exists" << endl;
+                }
+            }else{
+                cout << "One or two vertex does not exists" << endl;
+            }
+        }
+
+        void deleteEdge(int fromVertex, int toVertex){
+            if(edgeExists(fromVertex, toVertex)){
+                for(int i=0;i<vertices.size();i++){
+                    if(vertices.at(i).getVertexID() == fromVertex){
+                        for(auto it=vertices.at(i).edgeList.begin();it!=vertices.at(i).edgeList.end();it++){
+                            if(it->getDestinationVertexID() == toVertex){
+                                vertices.at(i).edgeList.erase(it);
+                                break;
+                            }
+                        }
+                    }else if(vertices.at(i).getVertexID() == toVertex){
+                        for(auto it=vertices.at(i).edgeList.begin();it!=vertices.at(i).edgeList.end();i++){
+                            if(it->getDestinationVertexID() == fromVertex){
+                                vertices.at(i).edgeList.erase(it);
+                                break;
+                            }
+                        }
+                    }
+                }
+                cout << "Edge deleted successfully" << endl;
+            }else{
+                cout << "Edge does not exists" << endl;
+            }
+        }
+
+        void deleteVertex(int ID){
+            int vIndex;
+            if(vertexExists(ID)){
+                for(int i=0;i<vertices.size();i++){
+                    if(vertices.at(i).getVertexID() == ID){
+                        vIndex = i;
+                        break;
+                    }
+                }
+                for(int i=0;i<vertices.size();i++){
+                    for(auto it=vertices.at(i).edgeList.begin();it!=vertices.at(i).edgeList.end();it++){
+                        if(it->getDestinationVertexID() == ID){
+                            vertices.at(i).edgeList.erase(it);
+                            break;
+                        }
+                    }
+                }
+                vertices.erase(vertices.begin() + vIndex);
+                cout << "Vertex deleted successfully" << endl;
+            }else{
+                cout <<"Vertex does not exists" << endl;
+            }
+        }
+
+        void printGraph(){
+            for(int i=0;i<vertices.size();i++){
+                Vertex temp;
+                temp = vertices.at(i);
+                cout << "ID: " << temp.getVertexID() << endl;
+                cout << "Data: " << temp.getData() << endl;
+                temp.printEdgeList();
+                cout << endl;
+            }
+        }
 };
 
 int main(){
@@ -174,5 +263,12 @@ int main(){
     graph.addVertex(1, 'A');
     graph.addVertex(2, 'B');
     graph.addEdge(1, 2, 10);
+    graph.printGraph();
+    graph.updateEdge(1, 2, 50);
+    graph.printGraph();
+    // graph.deleteEdge(1, 2);
+    graph.printGraph();
+    graph.deleteVertex(2);
+    graph.printGraph();
     return 0;
 }
