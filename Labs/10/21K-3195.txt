@@ -1,0 +1,1181 @@
+**************************************
+*************** TASK 1 ***************
+**************************************
+
+#include <iostream>
+#include <stdlib.h>
+using namespace std;
+
+class Node
+{
+	public:
+
+	char data;
+	int freq;
+	Node *left, *right;
+
+	Node(char data, int freq){
+		this->data = data;
+		this->freq = freq;
+		left = right = NULL;
+	}
+};
+
+class MinHeap
+{
+	public:
+	int size;
+	int capacity;
+	Node** array;
+	
+	MinHeap* createMinHeap(int capacity)
+	{
+		this->capacity = capacity;
+		this->size = size;
+		MinHeap* minHeap = (MinHeap*)malloc(sizeof(MinHeap));
+		minHeap->size = 0;
+	
+		minHeap->capacity = capacity;
+	
+		minHeap->array = (Node**)malloc(minHeap->capacity * sizeof(Node*));
+		return minHeap;
+	}
+	
+	void swap(Node** a, Node** b)
+	{
+		Node* t = *a;
+		*a = *b;
+		*b = t;
+	}
+	
+	void minHeapify(MinHeap* minHeap, int i)
+	{
+		int smallest = i;
+		int left = 2 * i + 1;
+		int right = 2 * i + 2;
+	
+		if (left < minHeap->size && minHeap->array[left]-> freq < minHeap->array[smallest]->freq)
+			smallest = left;
+	
+		if (right < minHeap->size && minHeap->array[right]-> freq < minHeap->array[smallest]->freq)
+			smallest = right;
+		
+		// if root is not the smallest
+
+		if (smallest != i) 
+		{
+			swap(&minHeap->array[smallest],&minHeap->array[i]);
+			minHeapify(minHeap, smallest);
+		}
+	}
+	
+	int isSizeOne(MinHeap* minHeap)
+	{
+		return (minHeap->size == 1);
+	}
+	
+	Node* extractMin(MinHeap* minHeap)
+	{
+		Node* temp = minHeap->array[0];
+		minHeap->array[0] = minHeap->array[minHeap->size - 1];
+	
+		--minHeap->size;
+		minHeapify(minHeap, 0);
+	
+		return temp;
+	}
+	
+	void insertMinHeap(MinHeap* minHeap, Node* minHeapNode)
+	{
+		++minHeap->size;
+		int i = minHeap->size - 1;
+	
+		while (i && minHeapNode->freq < minHeap->array[(i - 1) / 2]->freq) 
+		{
+	
+			minHeap->array[i] = minHeap->array[(i - 1) / 2];
+			i = (i - 1) / 2;
+		}
+	
+		minHeap->array[i] = minHeapNode;
+	}
+	
+	void buildMinHeap(MinHeap* minHeap)
+	{
+		int n = minHeap->size - 1;
+		int i;
+	
+		for (i = (n - 1) / 2; i >= 0; --i)
+			minHeapify(minHeap, i);
+	}
+	
+	int isLeaf(Node* root)
+	{
+		return !(root->left) && !(root->right);
+	}
+	
+	MinHeap* BuildMinHeap(char data[], int freq[], int size)
+	{
+		MinHeap* minHeap = createMinHeap(size);
+	
+		for (int i = 0; i < size; ++i)
+			minHeap->array[i] = new Node(data[i], freq[i]);
+	
+		minHeap->size = size;
+		buildMinHeap(minHeap);
+	
+		return minHeap;
+	}
+	
+	Node* buildTree(char data[], int freq[], int size)
+	{
+		Node*left, *right, *top;
+	
+		MinHeap* minHeap = BuildMinHeap(data, freq, size);
+		
+		while (!isSizeOne(minHeap))
+		{
+			left = extractMin(minHeap);
+			right = extractMin(minHeap);
+	
+	// '!' is a special value for internal nodes
+			top = new Node('!', left->freq + right->freq);
+	
+			top->left = left;
+			top->right = right;
+	
+			insertMinHeap(minHeap, top);
+		}
+	
+		return extractMin(minHeap);
+	}
+	
+	void print(Node* root, int arr[], int top)
+	{
+		if (root->left) 
+		{
+	
+			arr[top] = 0;
+			print(root->left, arr, top + 1);
+		}
+	
+		if (root->right) 
+		{	
+			arr[top] = 1;
+			print(root->right, arr, top + 1);
+		}
+
+		if (isLeaf(root)) 
+		{
+			cout <<"\n "<< root->data <<" =  ";
+			for (int i = 0; i < top; ++i)
+				cout<< arr[i];		
+		}
+	}
+	
+	Node * Huffman(char data[], int freq[], int size)
+	{
+		Node* root = buildTree(data, freq, size);
+	
+		int arr[100], top = 0;
+	
+		print(root, arr, top);
+		return root;
+	}
+};
+
+int main()
+{
+	char arr[] = { 'a', 'b', 'c', 'd' };
+	int freq[] = { 6, 3, 1, 4};
+
+	int size = sizeof(arr) / sizeof(arr[0]);
+	
+	MinHeap hm;
+	Node *root;
+	root = hm.Huffman(arr, freq, size);
+	return 0;
+}
+
+
+**************************************
+*************** TASK 2 ***************
+**************************************
+
+#include <iostream>
+#include <stdlib.h>
+using namespace std;
+
+class Node
+{
+	public:
+
+	char data;
+	int freq;
+	Node *left, *right;
+
+	Node(char data, int freq){
+		this->data = data;
+		this->freq = freq;
+		left = right = NULL;
+	}
+};
+
+class MinHeap
+{
+	public:
+	int size;
+	int capacity;
+	Node** array;
+	
+	MinHeap* createMinHeap(int capacity)
+	{
+		this->capacity = capacity;
+		this->size = size;
+		MinHeap* minHeap = (MinHeap*)malloc(sizeof(MinHeap));
+		minHeap->size = 0;
+	
+		minHeap->capacity = capacity;
+	
+		minHeap->array = (Node**)malloc(minHeap->capacity * sizeof(Node*));
+		return minHeap;
+	}
+	
+	void swap(Node** a, Node** b)
+	{
+		Node* t = *a;
+		*a = *b;
+		*b = t;
+	}
+	
+	void minHeapify(MinHeap* minHeap, int i)
+	{
+		int smallest = i;
+		int left = 2 * i + 1;
+		int right = 2 * i + 2;
+	
+		if (left < minHeap->size && minHeap->array[left]-> freq < minHeap->array[smallest]->freq)
+			smallest = left;
+	
+		if (right < minHeap->size && minHeap->array[right]-> freq < minHeap->array[smallest]->freq)
+			smallest = right;
+		
+		// if root is not the smallest
+
+		if (smallest != i) 
+		{
+			swap(&minHeap->array[smallest],&minHeap->array[i]);
+			minHeapify(minHeap, smallest);
+		}
+	}
+	
+	int isSizeOne(MinHeap* minHeap)
+	{
+		return (minHeap->size == 1);
+	}
+	
+	Node* extractMin(MinHeap* minHeap)
+	{
+		Node* temp = minHeap->array[0];
+		minHeap->array[0] = minHeap->array[minHeap->size - 1];
+	
+		--minHeap->size;
+		minHeapify(minHeap, 0);
+	
+		return temp;
+	}
+	
+	void insertMinHeap(MinHeap* minHeap, Node* minHeapNode)
+	{
+		++minHeap->size;
+		int i = minHeap->size - 1;
+	
+		while (i && minHeapNode->freq < minHeap->array[(i - 1) / 2]->freq) 
+		{
+	
+			minHeap->array[i] = minHeap->array[(i - 1) / 2];
+			i = (i - 1) / 2;
+		}
+	
+		minHeap->array[i] = minHeapNode;
+	}
+	
+	void buildMinHeap(MinHeap* minHeap)
+	{
+		int n = minHeap->size - 1;
+		int i;
+	
+		for (i = (n - 1) / 2; i >= 0; --i)
+			minHeapify(minHeap, i);
+	}
+	
+	int isLeaf(Node* root)
+	{
+		return !(root->left) && !(root->right);
+	}
+	
+	MinHeap* BuildMinHeap(char data[], int freq[], int size)
+	{
+		MinHeap* minHeap = createMinHeap(size);
+	
+		for (int i = 0; i < size; ++i)
+			minHeap->array[i] = new Node(data[i], freq[i]);
+	
+		minHeap->size = size;
+		buildMinHeap(minHeap);
+	
+		return minHeap;
+	}
+	
+	Node* buildTree(char data[], int freq[], int size)
+	{
+		Node*left, *right, *top;
+	
+		MinHeap* minHeap = BuildMinHeap(data, freq, size);
+		
+		while (!isSizeOne(minHeap))
+		{
+			left = extractMin(minHeap);
+			right = extractMin(minHeap);
+	
+	// '!' is a special value for internal nodes
+			top = new Node('!', left->freq + right->freq);
+	
+			top->left = left;
+			top->right = right;
+	
+			insertMinHeap(minHeap, top);
+		}
+	
+		return extractMin(minHeap);
+	}
+	
+	void print(Node* root, int arr[], int top)
+	{
+		if (root->left) 
+		{
+	
+			arr[top] = 0;
+			print(root->left, arr, top + 1);
+		}
+	
+		if (root->right) 
+		{	
+			arr[top] = 1;
+			print(root->right, arr, top + 1);
+		}
+
+		if (isLeaf(root)) 
+		{
+			cout <<"\n "<< root->data <<" =  ";
+			for (int i = 0; i < top; ++i)
+				cout<< arr[i];		
+		}
+	}
+	
+	Node * Huffman(char data[], int freq[], int size)
+	{
+		Node* root = buildTree(data, freq, size);
+	
+		int arr[100], top = 0;
+		return root;
+	}
+
+	void decode_huff(Node* root,string st)
+	{
+	    string str = "";
+	    Node *current =root;
+	    for(int i=0;i<st.size();i++)
+		{
+	        if(st[i]=='0') 
+				current = current->left;
+	        else 
+				current = current->right;
+	        if(!current->left && !current->right) //reached leaf node
+			{ 
+	            str = str + current->data;
+	            current=root;
+	        }
+	    }
+	    cout<<str<<endl;
+	}
+	
+};
+
+int main()
+{
+	char arr[] = { 'a', 'b', 'c', 'd' };
+	int freq[] = { 6, 3, 1, 4};
+
+	int size = sizeof(arr) / sizeof(arr[0]);
+	
+	MinHeap hm;
+	Node *root;
+	root = hm.Huffman(arr, freq, size);
+	hm.decode_huff(root, "010110111");
+	return 0;
+}
+
+
+
+**************************************
+************* TASK 3(a) **************
+**************************************
+
+#include <iostream>
+using namespace std;
+
+class MaxHeap{
+	private:
+		int capacity;
+		int size;
+		int *arr;
+	public:
+		MaxHeap(int capacity){
+			this->capacity = capacity;
+			size = 0;
+			arr = new int[this->capacity];
+		}
+		
+		int parent(int i){
+			return((i - 1) / 2);
+		}
+		
+		int leftChild(int i){
+			return((2 * i) + 1);
+		}
+		
+		int rightChild(int i){
+			return((2 * i) + 2);
+		}
+		
+		void insert(int data){
+			if(capacity == size){
+				cout << "Heap is full" << endl;
+				return;
+			}
+			size++;
+			int i = size - 1;
+			arr[i] = data;
+			
+			while(i != 0 && arr[i] > arr[parent(i)]){
+				swap(arr[i], arr[parent(i)]);
+				i = parent(i);
+			}
+		}		
+		
+		void printHeap(){
+		    int power = 0;
+		    int value = 1;
+		    for(int i = 0; i < size; i++){
+		        if(i == value){
+		            cout << endl;
+		            power += 1;
+		            value += (1 << power);
+		        }
+		        cout << arr[i] << "  ";
+		    }
+		    cout << endl;
+		}
+		
+		void deleteData(int data){
+			int index = getIndex(data);
+			increaseKey(index, INT_MAX);
+			extractMax();
+		}
+		
+		int getIndex(int data){
+			for(int i=0;i<size;i++){
+				if(arr[i] == data){
+					return i;
+				}
+			}
+			return -1;
+		}
+		
+		void increaseKey(int index, int data){
+			arr[index] = data;
+			while(index != 0 && data > arr[parent(index)]){
+				swap(arr[index], arr[parent(index)]);
+				index = parent(index);
+			}
+		}
+		
+		int extractMax(){
+			if(size == 0){
+				cout << "Empty" << endl;
+				return -1;
+			}else if(size == 1){
+				size--;
+				return arr[0];
+			}else{
+				int data = arr[0];
+				arr[0] = arr[size - 1];
+				size--;
+				heapify(0);
+				return data;
+			}
+		}
+		
+		void heapify(int i){
+			int left = leftChild(i);
+			int right = rightChild(i);
+			int largest = i;
+			if(left < size && arr[left] > arr[largest]){
+				largest = left;
+			}
+			if(right < size && arr[right] > arr[largest]){
+				largest = right;
+			}
+			if(largest != i){
+				swap(arr[i], arr[largest]);
+				heapify(largest);
+			}
+		}
+
+		~MaxHeap(){
+			delete[] arr;
+		}
+};
+
+int main(){
+	int arr[] = {35, 33, 42, 10, 14, 19, 27, 44, 26, 31};
+	int size = sizeof(arr) / sizeof(arr[0]);
+	MaxHeap heap(size);
+	for(int i=0;i<size;i++){
+		heap.insert(arr[i]);
+	}
+	cout << "Printing max heap after inserting all values:" << endl;
+	heap.printHeap();
+	cout << "\nDeleting 42" << endl;
+	heap.deleteData(42);
+	cout << "Printing max heap after deleting 42:" << endl;
+	heap.printHeap();
+	return 0;
+}
+
+
+**************************************
+************* TASK 3(b) **************
+**************************************
+
+#include <iostream>
+using namespace std;
+
+class MinHeap{
+	private:
+		int capacity;
+		int size;
+		int *arr;
+	public:
+		MinHeap(int capacity){
+			this->capacity = capacity;
+			size = 0;
+			arr = new int[this->capacity];
+		}
+
+		int parent(int i){
+			return((i - 1) / 2);
+		}
+
+		int leftChild(int i){
+			return((2 * i) + 1);
+		}
+
+		int rightChild(int i){
+			return((2 * i) + 2);
+		}
+
+		void insert(int data){
+			if(size == capacity){
+				cout << "Head is full" << endl;
+			}
+			size++;
+			int i = size - 1;
+			arr[i] = data;
+
+			while(i != 0 && arr[i] < arr[parent(i)]){
+				swap(arr[i], arr[parent(i)]);
+				i = parent(i);
+			}
+		}
+
+		void deleteData(int data){
+			int i = getIndex(data);
+			decreaseKey(i, INT_MIN);
+			extractMin();
+		}
+
+		int getIndex(int data){
+			for(int i=0;i<size;i++){
+				if(arr[i] == data){
+					return i;
+				}
+			}
+			return -1;
+		}
+
+		void decreaseKey(int i, int data){
+			arr[i] = data;
+			while(i != 0 && arr[i] < arr[parent(i)]){
+				swap(arr[i], arr[parent(i)]);
+				i = parent(i);
+			}
+		}
+
+		int extractMin(){
+			if(size == 0){
+				cout << "Heap is empty" << endl;
+				return -1;
+			}else if(size == 1){
+				size--;
+				return arr[0];
+			}else{
+				int data = arr[0];
+				arr[0] = arr[size - 1];
+				size--;
+				heapify(0);
+				return data;
+			}
+		}
+
+		void heapify(int i){
+			int left = leftChild(i);
+			int right = rightChild(i);
+			int smallest = i;
+			if(left < size && arr[left] < arr[smallest]){
+				smallest = left;
+			}
+			if(right < size && arr[right] < arr[smallest]){
+				smallest = right;
+			}
+			if(smallest != i){
+				swap(arr[i], arr[smallest]);
+				heapify(smallest);
+			}
+		}
+
+		void printHeap(){
+		    int power = 0;
+		    int value = 1;
+		    for(int i = 0; i < size; i++){
+		        if(i == value){
+		            cout << endl;
+		            power += 1;
+		            value += (1 << power);
+		        }
+		        cout << arr[i] << "  ";
+		    }
+		    cout << endl;
+		}
+
+		~MinHeap(){
+			delete[] arr;
+		}
+};
+
+int main(){
+	int arr[] = {35, 33, 42, 10, 14, 19, 27, 44, 26, 31};
+	int size = sizeof(arr) / sizeof(arr[0]);
+	MinHeap heap(size);
+	for(int i=0;i<size;i++){
+		heap.insert(arr[i]);
+	}
+	heap.printHeap();
+	heap.deleteData(35);
+	heap.printHeap();
+	return 0;
+}
+
+
+**************************************
+************* TASK 3(c) **************
+**************************************
+
+#include <iostream>
+using namespace std;
+
+class MaxHeap{
+	private:
+		int capacity;
+		int size;
+		int *arr;
+	public:
+		MaxHeap(int capacity){
+			this->capacity = capacity;
+			size = 0;
+			arr = new int[this->capacity];
+		}
+		
+		int parent(int i){
+			return((i - 1) / 2);
+		}
+		
+		int leftChild(int i){
+			return((2 * i) + 1);
+		}
+		
+		int rightChild(int i){
+			return((2 * i) + 2);
+		}
+		
+		void insert(int data){
+			if(capacity == size){
+				cout << "Heap is full" << endl;
+				return;
+			}
+			size++;
+			int i = size - 1;
+			arr[i] = data;
+			
+			while(i != 0 && arr[i] > arr[parent(i)]){
+				swap(arr[i], arr[parent(i)]);
+				i = parent(i);
+			}
+		}		
+		
+		void printHeap(){
+		    int power = 0;
+		    int value = 1;
+		    for(int i = 0; i < size; i++){
+		        if(i == value){
+		            cout << endl;
+		            power += 1;
+		            value += (1 << power);
+		        }
+		        cout << arr[i] << "  ";
+		    }
+		    cout << endl;
+		}
+		
+		void deleteData(int data){
+			int index = getIndex(data);
+			increaseKey(index, INT_MAX);
+			extractMax();
+		}
+		
+		int getIndex(int data){
+			for(int i=0;i<size;i++){
+				if(arr[i] == data){
+					return i;
+				}
+			}
+			return -1;
+		}
+		
+		void increaseKey(int index, int data){
+			arr[index] = data;
+			while(index != 0 && data > arr[parent(index)]){
+				swap(arr[index], arr[parent(index)]);
+				index = parent(index);
+			}
+		}
+		
+		int extractMax(){
+			if(size == 0){
+				cout << "Empty" << endl;
+				return -1;
+			}else if(size == 1){
+				size--;
+				return arr[0];
+			}else{
+				int data = arr[0];
+				arr[0] = arr[size - 1];
+				size--;
+				heapify(0);
+				return data;
+			}
+		}
+		
+		void heapify(int i){
+			int left = leftChild(i);
+			int right = rightChild(i);
+			int largest = i;
+			if(left < size && arr[left] > arr[largest]){
+				largest = left;
+			}
+			if(right < size && arr[right] > arr[largest]){
+				largest = right;
+			}
+			if(largest != i){
+				swap(arr[i], arr[largest]);
+				heapify(largest);
+			}
+		}
+
+        void sort(){
+            int n = size;
+            int *temp = new int[n];
+            for(int i=0;i<n;i++){
+                temp[i] = extractMax();
+            }
+
+            // printing sorted array
+            for(int i=n-1;i>=0;i--){
+                cout << temp[i] << "  ";
+            }
+            cout << endl;
+            delete[] temp;
+        }
+
+		~MaxHeap(){
+			delete[] arr;
+		}
+};
+
+int main(){
+	int arr[] = {35, 33, 42, 10, 14, 19, 27, 44, 26, 31};
+	int size = sizeof(arr) / sizeof(arr[0]);
+	MaxHeap heap(size);
+	for(int i=0;i<size;i++){
+		heap.insert(arr[i]);
+	}
+    cout << "Sorting Heap (in ascending order): ";
+	heap.sort();
+	return 0;
+}
+
+
+**************************************
+*************** TASK 4 ***************
+**************************************
+
+#include <iostream>
+using namespace std;
+
+class Heap{
+	private:
+		int capacity;
+		int size;
+		int *arr;
+	public:
+		Heap(int capacity){
+			this->capacity = capacity;
+			size = 0;
+			arr = new int[capacity];
+		}
+
+		int parent(int i){
+			return((i - 1) / 2);
+		}
+
+		int leftChild(int i){
+			return((2 * i) + 1);
+		}
+
+		int rightChild(int i){
+			return((2 * i) + 2);
+		}
+
+		void buildHeap(int a[], int n){
+			for(int i=0;i<n;i++){
+				insert(a[i]);
+			}
+		}
+
+		void insert(int data){
+			if(size == capacity){
+				cout << "Heap is full" << endl;
+				return;
+			}
+			size++;
+			int i = size - 1;
+			arr[i] = data;
+			while(i != 0 && arr[i] < arr[parent(i)]){
+				swap(arr[i], arr[parent(i)]);
+				i = parent(i);
+			}
+		}
+
+		void printHeap(){
+		    int power = 0;
+		    int value = 1;
+		    for(int i = 0; i < size; i++){
+		        if(i == value){
+		            cout << endl;
+		            power += 1;
+		            value += (1 << power);
+		        }
+		        cout << arr[i] << "  ";
+		    }
+		    cout << endl;
+		}
+
+		int extractMin(){
+			if(size == 0){
+				cout << "Heap is empty" << endl;
+				return -1;
+			}else if(size == 1){
+				size--;
+				return arr[0];
+			}else{
+				int data = arr[0];
+				arr[0] = arr[size - 1];
+				size--;
+				heapify(0);
+				return data;
+			}
+		}
+
+		void heapify(int i){
+			int l = leftChild(i);
+			int r = rightChild(r);
+			int smallest = i;
+			
+			if(l < size && arr[l] < arr[smallest]){
+				smallest = l;
+			}
+			if(r < size && arr[r] < arr[smallest]){
+				smallest = r;
+			}
+			if(i != smallest){
+				swap(arr[i], arr[smallest]);
+				heapify(smallest);
+			}
+		}
+
+		void heapSort(int *arr, int n){
+			for(int i=0;i<n;i++){
+				arr[i] = extractMin();
+			}
+		}
+
+		~Heap(){
+			delete[] arr;
+		}
+};
+
+int main(){
+	int arr[] = {4, 1, 3, 9, 7};
+	int n = sizeof(arr) / sizeof(arr[0]);
+	Heap heap(n);
+	heap.buildHeap(arr, n);
+	cout << "Heap: " << endl;
+	heap.printHeap();
+
+	int *sortedArray = new int[n];
+	heap.heapSort(sortedArray, n);
+	cout << "\nSorted Array: ";
+	for(int i=0;i<n;i++){
+		cout << sortedArray[i] << "  ";
+	}
+	delete[] sortedArray;
+	return 0;
+}
+
+
+**************************************
+*************** TASK 5 ***************
+**************************************
+
+#include <iostream>
+using namespace std;
+
+class PriorityQueue{
+	private:
+		int capacity;
+		int size;
+		int *arr;
+	public:
+		PriorityQueue(int capacity){
+			this->capacity = capacity;
+			size = 0;
+			arr = new int[capacity];
+		}
+
+		int parent(int i){
+			return((i - 1) / 2);
+		}
+
+		int leftChild(int i){
+			return((2 * i) + 1);
+		}
+
+		int rightChild(int i){
+			return((2 * i) + 2);
+		}
+
+		void enqueue(int data){
+			if(capacity == size){
+				cout << "Queue is full" << endl;
+				return;
+			}
+			size++;
+			int i = size - 1;
+			arr[i] = data;
+			while(i != 0 && arr[i] > arr[parent(i)]){
+				swap(arr[i], arr[parent(i)]);
+				i = parent(i);
+			}
+			cout << "Enqueue: " << data << endl;
+		}
+
+		int dequeue(){
+			if(size == 0){
+				cout << "Queue is empty" << endl;
+				return -1;
+			}else if(size == 1){
+				size--;
+				cout << "Dequeue: " << arr[0] << endl;
+				return arr[0];
+			}else{
+				int data = arr[0];
+				arr[0] = arr[size - 1];
+				size--;
+				heapify(0);
+				cout << "Dequeue: " << data << endl;
+				return data;
+			}
+		}
+
+		void heapify(int i){
+			int left = leftChild(i);
+			int right = rightChild(i);
+			int largest = i;
+			if(left < size && arr[left] > arr[largest]){
+				largest = left;
+			}
+			if(right < size && arr[right] > arr[largest]){
+				largest = right;
+			}
+			if(largest != i){
+				swap(arr[largest], arr[i]);
+				heapify(largest);
+			}
+		}
+
+		~PriorityQueue(){
+			delete[] arr;
+		}
+};
+
+int main(){
+	PriorityQueue queue(6);
+	queue.enqueue(4);
+	queue.enqueue(5);
+	queue.enqueue(9);
+	queue.enqueue(3);
+	queue.enqueue(1);
+	queue.enqueue(2);
+	cout << endl;
+	queue.dequeue();
+	queue.dequeue();
+	queue.dequeue();
+	return 0;
+}
+
+
+**************************************
+*************** TASK 6 ***************
+**************************************
+
+#include <iostream>
+using namespace std;
+
+class MinHeap{
+	private:
+		int capacity;
+		int size;
+		int *arr;
+	public:
+		MinHeap(int capacity){
+			this->capacity = capacity;
+			size = 0;
+			arr = new int[this->capacity];
+		}
+
+		bool isEmpty(){
+			if(size == 0){
+				return true;
+			}else{
+				return false;
+			}
+		}
+
+		int parent(int i){
+			return((i - 1) / 2);
+		}
+
+		int leftChild(int i){
+			return((2 * i) + 1);
+		}
+
+		int rightChild(int i){
+			return((2 * i) + 2);
+		}
+
+		void insert(int data){
+			if(size == capacity){
+				cout << "Heap is full" << endl;
+				return;
+			}
+			size++;
+			int i = size - 1;
+			arr[i] = data;
+			
+			while(i != 0 && arr[i] < arr[parent(i)]){
+				swap(arr[i], arr[parent(i)]);
+				i = parent(i);
+			}
+		}
+
+		int extractMin(){
+			if(size == 0){
+				cout << "Heap is empty" << endl;
+				return -1;
+			}else if(size == 1){
+				size--;
+				return arr[0];
+			}else{
+				int data = arr[0];
+				arr[0] = arr[size - 1];
+				size--;
+				heapify(0);
+				return data;
+			}
+		}
+
+		void heapify(int i){
+			int left = leftChild(i);
+			int right = rightChild(i);
+			int smallest = i;
+			if(left < size && arr[left] < arr[smallest]){
+				smallest = left;
+			}
+			if(right < size && arr[right] < arr[smallest]){
+				smallest = right;
+			}
+			if(smallest != i){
+				swap(arr[i], arr[smallest]);
+				heapify(smallest);
+			}
+		}
+
+		int top(){
+			return arr[0];
+		}
+};
+
+int nonIncreasingOrder(int arr[], int n){
+	int sum = 0, dif = 0;
+	MinHeap heap(n);
+		
+	for (int i = 0; i < n; i++) {
+		if (!heap.isEmpty() && heap.top() < arr[i]) {
+			dif = arr[i] - heap.top();
+			sum += dif;
+			heap.extractMin();
+			heap.insert(arr[i]);
+		}
+		heap.insert(arr[i]);
+	}
+		
+	return sum;
+}
+
+int main(){
+	int arr[] = {3, 1, 2, 1};
+	int n = sizeof(arr) / sizeof(arr[0]);
+	cout << "Minimum number of operations required: " << nonIncreasingOrder(arr, n) << endl;
+    return 0;
+}

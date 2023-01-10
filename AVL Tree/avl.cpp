@@ -170,12 +170,12 @@ class AVL{
             if(bf == 2 && getBalanceFactor(r->left) >= 0){
                 return rightRotate(r);
             }
+            if(bf == -2 && getBalanceFactor(r->right) <= 0){
+                return leftRotate(r);
+            }
             if(bf == 2 && getBalanceFactor(r->left) == -1){
                 r->left = leftRotate(r->left);
                 return rightRotate(r);
-            }
-            if(bf == -2 && getBalanceFactor(r->right) <= 0){
-                return leftRotate(r);
             }
             if(bf == -2 && getBalanceFactor(r->right) == 1){
                 r->right = rightRotate(r->right);
@@ -196,11 +196,11 @@ class AVL{
 
 int main(){
     AVL tree;
-    tree.root = tree.insert(tree.root, 10);
     tree.root = tree.insert(tree.root, 20);
-    tree.root = tree.insert(tree.root, 30);
     tree.root = tree.insert(tree.root, 40);
+    tree.root = tree.insert(tree.root, 30);
     tree.root = tree.insert(tree.root, 50);
+    tree.root = tree.insert(tree.root, 10);
     tree.root = tree.insert(tree.root, 25);
 
     tree.preOrder(tree.root);

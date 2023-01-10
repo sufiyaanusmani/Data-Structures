@@ -1,0 +1,457 @@
+**********************************
+************* TASK 1 *************
+**********************************
+
+
+// Sufiyaan Usmani
+// 21K-3195
+// BCS-3J
+// Task 1
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+void bubbleSort(string arr[], int n)
+{
+	string temp;
+	for (int i = 0; i < n - 1; i++)
+	{
+		for (int j = 0; j < n - 1 - i; j++)
+		{
+			if (arr[j] > arr[j + 1])
+			{
+				temp = arr[j];
+				arr[j] = arr[j + 1];
+				arr[j + 1] = temp;
+			}
+		}
+	}
+}
+
+void display(string arr[], int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		cout << arr[i] << "  ";
+	}
+	cout << endl;
+}
+
+int main()
+{
+	string arr[] = {"Fouzan", "Sufiyaan", "Qasim", "Yousuf", "Ahsan"};
+	int size = sizeof(arr) / sizeof(arr[0]);
+
+	cout << "BEFORE SORTING: ";
+	display(arr, size);
+
+	bubbleSort(arr, size);
+
+	cout << "\nAFTER SORTING : ";
+	display(arr, size);
+	return 0;
+}
+
+
+**********************************
+************* TASK 2 *************
+**********************************
+
+
+// Sufiyaan Usmani
+// 21K-3195
+// BCS-3J
+// Task 2
+
+#include <iostream>
+using namespace std;
+
+class Date
+{
+private:
+	int day;
+	int month;
+	int year;
+
+public:
+	void input()
+	{
+		cout << "Enter day: ";
+		cin >> day;
+		cout << "Enter month: ";
+		cin >> month;
+		cout << "Enter Year: ";
+		cin >> year;
+	}
+
+	void display()
+	{
+		cout << day << " / " << month << " / " << year << endl;
+	}
+
+	friend void selectionSort(Date[], int n); // this will sort array of objects
+};
+
+void selectionSort(Date date[], int n)
+{
+	int minIndex;
+	Date temp;
+	for (int i = 0; i < n - 1; i++)
+	{
+		minIndex = i;
+		for (int j = i + 1; j < n; j++)
+		{
+			if (date[j].year < date[minIndex].year)
+			{
+				minIndex = j;
+			}
+		}
+		temp = date[i];
+		date[i] = date[minIndex];
+		date[minIndex] = temp;
+	}
+}
+
+int main()
+{
+	Date date[5];
+
+	for (int i = 0; i < 5; i++)
+	{
+		cout << "-- DATE " << i + 1 << " --" << endl;
+		date[i].input();
+		cout << endl;
+	}
+
+	cout << "\nBEFORE SORTING" << endl;
+
+	for (int i = 0; i < 5; i++)
+	{
+		date[i].display();
+	}
+
+	selectionSort(date, 5);
+
+	cout << "\nAFTER SORTING" << endl;
+
+	for (int i = 0; i < 5; i++)
+	{
+		date[i].display();
+	}
+	return 0;
+}
+
+
+
+**********************************
+************* TASK 3 *************
+**********************************
+
+
+// Sufiyaan Usmani
+// 21K-3195
+// BCS-3J
+// Task 3
+
+#include <iostream>
+using namespace std;
+
+void insertionSort(int *arr, int n)
+{
+	int temp, i, j;
+	for (i = 1; i < n; i++)
+	{
+		temp = arr[i];
+		j = i - 1;
+		while (j > -1 && arr[j] > temp)
+		{
+			arr[j + 1] = arr[j];
+			j--;
+		}
+		arr[j + 1] = temp;
+	}
+}
+
+void print(int *arr, int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		cout << arr[i] << "   ";
+	}
+}
+
+void input(int *arr, int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		cout << "Enter element at index " << i << ": ";
+		cin >> arr[i];
+	}
+}
+
+int main()
+{
+	int n;
+	cout << "Enter size of array: ";
+	cin >> n;
+
+	int *arr = new int[n];
+
+	input(arr, n);
+
+	cout << "\nBEFORE SORTING: ";
+	print(arr, n);
+
+	insertionSort(arr, n);
+
+	cout << "\nAFTER SORTING : ";
+	print(arr, n);
+
+	delete[] arr;
+	return 0;
+}
+
+
+
+**********************************
+************* TASK 4 *************
+**********************************
+
+
+// Sufiyaan Usmani
+// 21K-3195
+// BCS-3J
+// Task 4
+
+#include <iostream>
+using namespace std;
+
+void sort(int arr[], int n)
+{
+	int temp;
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n - 1 - i; j++)
+		{
+			if (arr[j] > arr[j + 1])
+			{
+				temp = arr[j];
+				arr[j] = arr[j + 1];
+				arr[j + 1] = temp;
+			}
+		}
+	}
+}
+
+int getMaxToys(int arr[], int n, int k)
+{
+	int count = 0;
+	int total = 0;
+
+	// first sorting the array
+	sort(arr, n);
+
+	for (int i = 0; i < n; i++)
+	{
+		if ((total + arr[i]) <= k) // checking first
+		{
+			// incrementing count only when total amount added is less than k
+			total += arr[i];
+			count++;
+		}
+		else
+		{
+			// this will only run when total exceeds the value of k
+			// loop will break when value of total gets greter than k
+			// which means you can not buy more toys
+			break; // this is done to make program efficient
+		}
+	}
+	return count;
+}
+
+int main()
+{
+	int n, k;
+
+	int arr1[] = {1, 12, 5, 111, 200, 1000, 10};
+	n = sizeof(arr1) / sizeof(arr1[0]);
+	k = 50;
+	cout << "You can buy a maximum of " << getMaxToys(arr1, n, k) << " toys" << endl;
+
+	int arr2[] = {20, 30, 50};
+	n = sizeof(arr2) / sizeof(arr2[0]);
+	k = 100;
+	cout << "\nYou can buy a maximum of " << getMaxToys(arr2, n, k) << " toys" << endl;
+	return 0;
+}
+
+
+
+**********************************
+************* TASK 5 *************
+**********************************
+
+
+#include <iostream>
+using namespace std;
+
+bool isSorted(int arr[], int n)
+{
+	for (int i = 0; i < n - 1; i++)
+	{
+		if (arr[i] > arr[i + 1])
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+void getMinMax(int arr[], int start, int end, int &min, int &max)
+{
+	for (int i = start; i <= end; i++)
+	{
+		if (arr[i] < min)
+		{
+			min = arr[i];
+		}
+		if (arr[i] > max)
+		{
+			max = arr[i];
+		}
+	}
+}
+
+void findUnsortedArray(int arr[], int n)
+{
+	if (isSorted(arr, n))
+	{
+		cout << "Array is already sorted" << endl;
+	}
+	else
+	{
+		int index1, index2;
+
+		// finding the lower index for sub array
+		for (int i = 0; i < n; i++)
+		{
+			if (arr[i] > arr[i + 1])
+			{
+				index1 = i;
+				break;
+			}
+		}
+
+		// finding the upper index for sub array
+		for (int i = n - 1; i > 0; i--)
+		{
+			if (arr[i] < arr[i - 1])
+			{
+				index2 = i;
+				break;
+			}
+		}
+
+		int min, max;
+		min = INT_MAX;
+		max = INT_MIN;
+		// find the max and min value inside sub array
+		getMinMax(arr, index1, index2, min, max);
+
+		// checking appropriate position for min value
+		for (int i = 0; i < index1; i++)
+		{
+			if (min < arr[i])
+			{
+				// updating lower index if correct position is found
+				index1 = i;
+				break;
+			}
+		}
+
+		// checking appropriate position for min value
+		for (int i = index2 + 1; i < n; i++)
+		{
+			if (max > arr[i])
+			{
+				// updating upper index if correct position is found
+				index2 = i;
+				break;
+			}
+		}
+
+		cout << "The sub array lies between " << index1 << " and " << index2 << endl;
+		cout << "Minumum length of subarray: " << index2 - index1 + 1 << endl;
+	}
+}
+
+void print(int arr[], int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		cout << arr[i] << "  ";
+	}
+	cout << endl;
+}
+
+int main()
+{
+	int size;
+
+	// unsorted array
+	int arr1[] = {10, 12, 20, 30, 25, 40, 32, 31, 35, 50, 60};
+	size = sizeof(arr1) / sizeof(arr1[0]);
+	cout << "Array: ";
+	print(arr1, size);
+	findUnsortedArray(arr1, size);
+
+	// unsorted array
+	int arr2[] = {0, 1, 15, 25, 6, 7, 30, 40, 50};
+	size = sizeof(arr2) / sizeof(arr2[0]);
+	cout << "\nArray: ";
+	print(arr2, size);
+	findUnsortedArray(arr2, size);
+
+	// sorted array
+	int arr3[] = {1, 5, 6, 7, 8, 8, 9};
+	size = sizeof(arr3) / sizeof(arr3[0]);
+	cout << "\nArray: ";
+	print(arr3, size);
+	findUnsortedArray(arr3, size);
+
+	return 0;
+}
+
+
+**********************************
+************* TASK 6 *************
+**********************************
+
+
+// Sufiyaan Usmani
+// 21K-3195
+// BCS-3J
+// Task 6
+
+Clerk should use Selection Sort since it minimizes the number of exchanges. In worst case, number of exchanges in selection sort is n-1. As the cost of exchanges in our scenario is high, Selection Sort is the best sorting method that the clerk should use. The number of comparisons in selection sort is O(n^2).
+
+Sample code for selection sort:
+
+void SelectionSort(int arr[], int size)
+{
+    int i, j, k;
+    for (i = 0; i < size; i++)
+    {
+        k = i;
+        for (j = i; j < size; j++)
+        {
+            if (arr[j] < arr[k])
+            {
+                k = j;
+            }
+        }
+        swap(arr[i], arr[k]);
+    }
+}

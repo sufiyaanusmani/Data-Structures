@@ -115,7 +115,7 @@ class MaxHeap{
 };
 
 int main(){
-	int arr[] = {35, 33, 42, 10, 14, 19, 27, 44, 26, 31};
+	int arr[] = {35, 33, 42, 10, 14, 19, 27, 44};
 	int size = sizeof(arr) / sizeof(arr[0]);
 	MaxHeap heap(size);
 	for(int i=0;i<size;i++){
